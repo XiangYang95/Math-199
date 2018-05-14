@@ -1,0 +1,375 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{biblatex}
+\addbibresource{citation.bib}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+\vspace*{6cm}
+
+\huge\textbf{Homeless Population}\\[3mm]
+\Large Ryan Du\\[1mm]
+
+Math 199, Spring 2018
+
+Adviser: Michael Lindstrom
+\vfill
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\section{Introduction}
+
+
+
+\section{Data Management}
+
+For neural networks, some of the data are 
+
+
+For neural networks, the data used was from several different sources. The numbers of parking citation, coffee shops, restaurants, homeless shelter, crimes, bus stops are obtain by previous work done on the subject [cite]. We introduced new time-dynamic, yearly data into our data set. We introduced the yearly ZRI and ZHVI
+
+
+\section{Techniques and Models}
+\subsection{Topic Modeling}
+\subsection{Neural Networks}
+
+We used neural networks to analyze the complex relationship between the time-dynamic data and the change in homeless population. Neural networks is a method that gets it's inspiration from the neurons of the human brain. The basic structure of a neural network is represented by the figure below. 
+
+\def\layersep{2.5cm}
+
+\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{input neuron}=[neuron, fill=green!50];
+    \tikzstyle{output neuron}=[neuron, fill=red!50];
+    \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    % Draw the input layer nodes
+    \foreach \name / \y in {1,...,4}
+    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+        \node[input neuron, pin=left:Input \#\y] (I-\name) at (0,-\y) {};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,5}
+        \path[yshift=0.5cm]
+            node[hidden neuron] (H-\name) at (\layersep,-\y cm) {};
+
+    % Draw the output layer node
+    \node[output neuron,pin={[pin edge={->}]right:Output}, right of=H-3] (O) {};
+
+    % Connect every node in the input layer with every node in the
+    % hidden layer.
+    \foreach \source in {1,...,4}
+        \foreach \dest in {1,...,5}
+            \path (I-\source) edge (H-\dest);
+
+    % Connect every node in the hidden layer with the output layer
+    \foreach \source in {1,...,5}
+        \path (H-\source) edge (O);
+
+    % Annotate the layers
+    \node[annot,above of=H-1, node distance=1cm] (hl) {Hidden layer};
+    \node[annot,left of=hl] {Input layer};
+    \node[annot,right of=hl] {Output layer};
+\end{tikzpicture}
+
+Imagine we have a size $m$ data-set with $n$ features with entries $(x_i,y_i)$, where $x_i$ is the feature value of a record and $y_i$ is the correct output.
+
+Let's first stipulate some notations: We will use $W_{jk}^l$ denote the entry at $(j,k)$ in the weight matrix that connects the $(l-1)^{\text{th}}$ layer to the $l^{\text{th}}$ layer. Similarly, we  use $b_j^l$ for the bias at the $j^{\text{th}}$ position in the $l^{\text{th}}$ layer; use $h^l$ for the activation function of the $l^{\text{th}}$ layer; use $a_j^l$ for the activation for the activation at the $j^{\text{th}}$ position in the $l^{\text{th}}$ layer. \texttt{More detailed graph and the notation should be reflected on graph}
+
+With these notation, we have the equation of the relation of activation at the $j^{\text{th}}$ position in the $l^{\text{th}}$ layer to the $(l-1)^{\text{th}}$ layer:
+\begin{align}
+&z_j^l=W^l_{jk}a_k^{l-1}+b^l_j &a^l=h^l(z^l)
+\end{align}
+
+We can rewrite the above equation with vectored form:
+\begin{align*}
+&z^l=W^la^{l-1}+b^l &a^l=h^l(z^l)
+\end{align*}
+
+The activation functions used in out models are: relu, sigmoid, and softmax. The relu function output the original input if the input in positive, 0 if the input is negative:
+\begin{align}
+\left\{
+	\begin{array}{ll}
+	h(z)=z&{\rm if~} z\leq 0\\
+	h(z)=0&{\rm if~} z<0.
+	\end{array}
+\right.
+\end{align}
+\begin{center}
+\includegraphics[scale=.15]{relu.png}
+\end{center}
+Figure 1: This figure shows the shape of the relu function.\\\\
+The sigmoid function always output a number between -1 and 1. If has a steeper rate of increase when the input is near 0:
+\begin{align}
+h(x)=\frac{1}{1+e^{-x}}
+\end{align}
+\begin{center}
+\includegraphics[scale=.3]{Logistic-curve.png}
+\end{center}
+Figure 2: This figure shows the shape of the sigmoid function.\\\\
+The softmax function is a generalization of the logistic function that "squashes" a vector of arbitrary real values to a vector of real values, where each entry is in the range (0, 1), and all the entries adds up to 1:
+$$h(z_j)={\frac {e^{z_{j}}}{\sum _{k=1}^{K}e^{z_{k}}}}$$
+
+The algorithm learns how to best fit the data-set by trying to minimize a cost function. In our model, we used the cross-entropy cost function: \texttt{math needs more accurate}
+\begin{align}
+C = - \frac{1}{N}\sum_i^N\sum_{j} y_{ij} \log (a^L_{ij})\label{eq:1}
+\end{align}
+
+The method we used to minimize the cost is gradient descent. All weights and biases are updated against the direction of the cost function gradient for the values at that iteration. The learning
+rate $\alpha$ is the size of step each iteration takes. For example, from the $i^{th}$ iteration to the $(i+1)^{th}$ iteration, the weight and bias should be updated by:
+\begin{align}
+&W^l_{i+1}=W_i^l-\alpha\frac{\partial C}{\partial W^l_{i}} &b^l_{i+1}=b_i^l-\alpha\frac{\partial C}{\partial b^l_{i}}
+\end{align}
+
+In order to actually compute the gradient of the cost function against each elements of the weight and bias in each layer, we apply the chain rule repeatedly. This way of finding the gradient is called backpropagation . The chain rule can be written out as this:
+\begin{align}
+&\frac{\partial C}{\partial b_k^l} = \frac{\partial C}{\partial a^L}\frac{\partial a^L}{\partial a^{L-1}}\frac{\partial a^{L-1}}{\partial a^{L-2}}\cdots \frac{\partial a^{l+1}}{\partial a^{l}}\cdot \frac{\partial a^{l}}{\partial b_k^l}\\
+&\frac{\partial C}{\partial W_{pq}^l} = \frac{\partial C}{\partial a^L}\frac{\partial a^L}{\partial a^{L-1}}\frac{\partial a^{L-1}}{\partial a^{L-2}}\cdots \frac{\partial a^{l+1}}{\partial a^{l}}\cdot \frac{\partial a^{l}}{\partial W_{pq}^l}
+\end{align}
+
+We thus need to derive each term in the previous formula.
+
+To make writing these formulas easier, we will be using the Einstein Summation notation where repeated indices are implicitly summed over. For example:
+$$a_{ik}a_{ij}\equiv \sum_ia_{ik}a_{ij}$$
+
+We will also be using the the Kronecker Delta, i.e:
+$$\delta_{ij}=
+	\left\{
+		\begin{array}{ll}
+		1&{\rm when~} i=j\\
+		0&{\rm when~} i\neq j.
+		\end{array}
+	\right.
+$$
+
+From the equation of the cost function \ref{eq:1}, we can see that: \texttt{Work out math}
+\begin{align}
+\frac{\partial C}{\partial a^L_{ij}}&=\frac{-1}{N}\frac{y_{ij}}{a_{ij}}
+\end{align}
+
+The activation function for the $l^{\text{th}}$ layer $h^l$ is a function from $z^l$ to $a^l$, therefore:
+\begin{align}
+&\frac{\partial a_i^l}{\partial z_j^l} = \frac{\partial h_i^l(z_j^l)}{z_j^l} = \mathsf{J^l_{ij}}\nonumber\\
+&\frac{\partial a^l}{\partial z^l} = \mathsf{J^l} \text{\ \ \ \ \ (the Jacobian matrix)}
+\end{align}
+
+From equation (1), it is obvious that:
+\begin{align}
+\frac{\partial z_j^L}{\partial b_k^L}=\delta_{jk}
+\end{align}
+
+Also from equation (1), we can see that:
+\begin{align}
+\frac{\partial z_j^l}{\partial W_{pq}^l}&=\frac{\partial}{\partial W_{pq}^l}(W^l_{jk}a_k^{l-1}+b_j^l)\nonumber\\
+&= \delta_{jp}\delta_{kq}a_k^{l-1} = \delta_{jp}a_q^{l-1}
+\end{align}
+
+We can thus derive the function for the gradient: $\frac{\partial a_i^l}{\partial b_k^l}$ and $\frac{\partial a_i^l}{\partial W_{pq}^l}$\\
+From (6) and (7):
+\begin{align}
+\frac{\partial a_i^l}{\partial b_k^l} = \left(\frac{\partial a_i^l}{\partial z_j^l}\right)\delta_{kj} = \frac{\partial a_i^l}{\partial z_k^l}
+\end{align}
+From (6) and (8):
+\begin{align}
+\frac{\partial a_i^l}{\partial W_{pq}^l}=\left(\frac{\partial a_i^l}{\partial z_j^l}\right)\delta_{jp}a_q^{l-1}=\left(\frac{\partial a_i^l}{\partial z_p^l}\right)a_q^{l-1}
+\end{align}
+
+To derive the expression for $\displaystyle \frac{\partial a^l}{\partial a^{l-1}}$, we have:
+\begin{align}
+\frac{\partial a_i^l}{\partial a_k^{l-1}}=\frac{\partial a_i^l}{\partial z_j^{l}}\frac{\partial z_j^l}{\partial a_k^{l-1}}
+\end{align}
+According to (1):
+\begin{align}
+\frac{\partial z_j^l}{\partial a_k^{l-1}}=W_{jk}^l
+\end{align}
+Therefore we can use (6) and (12) to calculate:
+\begin{align}
+\frac{\partial a_i^l}{\partial a_k^{l-1}} = \mathsf{J^l_{ij}}W_{jk}^l
+\end{align}
+Now we have all the elements to calculate (3) and (4)
+
+For neural network, it is also good practice to normalize the input data so that the data is on the same scale. There are two method that we used: Z-score and Principle Component Analysis (PCA). The data matrix $X$ is of dimension $\mathbb{R}^{m\times n}$, each row is a data point ($m$ of them) and each point has $n$ features.\\
+Z-score normalization makes each feature (the column of our matrix) has 0 mean and 1 standard deviation. We first calculate the mean of of each column:
+\begin{align}
+M_j = \frac{\sum_i X_{ij}}{m}
+\end{align}
+Then we can calculate the standard deviation of the column:
+\begin{align}
+S_j = \sqrt{\frac{\sum_i {(X_{ij}-M_j)^2}}{m-1}}
+\end{align}
+The Z-score of the data in a column would be:
+\begin{align}
+Z_{ij}=\frac{X_{ij}-M_j}{S_j}
+\end{align}
+We do this calculation for each number in our matrix X, we can get the Z-score normalized data matrix Z, where the data in each column has a mean of 0 and the standard deviation of 1.
+
+Principal component analysis (PCA) is a procedure that uses an orthogonal transformation to convert matrix variables into a set of linearly independent vectors called principal components. This transformation is defined in such a way that the first principal component has the largest possible variance (i.e.: accounts for as much of the variability in the data as possible), and each succeeding component in turn has the highest variance possible under the constraint that it is orthogonal to the preceding components. The resulting vectors are an orthogonal basis. PCA is sensitive to the relative scaling of the original variables, therefore we use the normalized $Z$ matrix derived above. \texttt{[cite]}
+
+We use $T$ to denote the full principal components decomposition matrix of $Z$. It is common nowadays to use single value decomposition (SVD) to derive the matrix $T$.
+\begin{align}
+&Z = U\Sigma W^T\\
+&T = ZW
+\end{align}
+And each column of $T$ is the principle component of $Z$, and column with smaller index explain more variance in the data. \texttt{More detailed math? Like about why they have the largest variance}
+
+There are 818 census tracks that all the data we desire to use are reliable. The features we used are in two groups:
+\begin{itemize}
+\item Static: Citations, Coffee, Restaurants,Shelters, Crime Count, Bus Stops, Tract size in Square Miles;
+\item Time Dynamic: Available Housing Units, Total Housing Units, Total Vacant Units, Unemployment Rate, Below Poverty Rate, Medium Rent As Percent Of Gross Income, Total Population, Medium Household Income, Medium Rent, Medium Value, Medium Monthly Housing Costs, ZRI, ZHVI.
+\end{itemize}
+For data in the static group, we took the value of 2016 and assumed that there is not much yearly changes. For data in the time dynamic group, we have data from 2014, 2015, and 2016.
+
+We tried a ternary classification for the change of numbers of homeless populations in a census track. We implemented the neural networks in Tensorflow, a popular machine learning system \texttt{[cite]}.
+
+First, we divide the change in homeless population into three buckets. Roughly, the lower bucket represent a significant decrease in homeless population, the middle bucket represent a small, insignificant variation in the homeless population, and the higher bucket represent a significant increase in homeless population.
+
+We used static data and time dynamic data (single year and change between years), to try to classify the change in homeless population. More specifically, for the time dynamic data, we used the change from 2014 to 2015 and the data of 2015 to classify the change in homeless population from 2015 to 2016; and the change from 2015 to 2016 and the data of 2016 to classify the change in homeless population from 2016 to 2017. We used the change of features of previous years to predict the change in homeless population because (1) ACS did not release the data for 2017 yet, and (2) the homeless population data is gathered during January, changes in previous years are reflected in changed in the year later \texttt{[cite]}. We compiled the data of changes in two years together and split them up with a ratio and 70\% and 30\%, 70\% of the data is used as the training set and 30\% of the data is used as the testing set.
+
+We tried different method of reprocessing the data:
+\begin{itemize}
+\item Normalization
+\item Principal Component Analysis (PCA)
+\end{itemize}
+We tried different cut off point for the buckets.\\
+We tested different neural net work structure. We did trials on:
+\begin{itemize}
+\item Number of layers
+\item Number of neurons in each layer
+\item Activation function
+	\begin{itemize}
+	\item Relu
+	\item Sigmoid
+	\item Softmax
+	\end{itemize}
+\item Learning rate
+\item Optimizer
+	\begin{itemize}
+	\item stochastic gradient descent
+	\item Adam
+	\end{itemize}
+\end{itemize}
+
+\section{Results}
+
+\subsection{Neural Networks}
+
+Because of the uneven distribution of the bins, we use different measurement to reflex how well the algorithm do. Apart from the accuracy, we have confusion matrix and precision. Accuracy can be calculated by:
+\begin{align}
+A = \frac{\text{\# of correct predictions}}{\text{\# of all predictions}}
+\end{align}
+A confusion matrix $C$ is a table that is often used to describe the performance of a classification model on a set of test data for which the true values are known. The $(i,j)$ entry of the matrix represents  the number of point whose true value is the $i^{th}$ class and it was predicted to the $j^{th}$ class. Precision$i$ is the ratio of true predictions among all the points that was predicted to be in the $i^{th}$ class:
+\begin{align}
+\text{Pred\ i} = \frac{C[i,i]}{\sum_j C[i,j]}
+\end{align}
+
+The table below shows the best result of the ternary classification for bucket division: [-400,-20), [-20,20), [20,600).\\
+
+\begin{tabular}{c||ccccccc}
+\hline 
+Model & Preprocessing & Accuracy & Training Cost & Testing Cost & Hidden & Output \\ 
+\hline 
+A & PCA & 0.725 & 0.359 & 0.501 & - & Sigmoid \\ 
+\hline 
+\end{tabular} \\\\
+With a confusion matrix and precision:\\
+\begin{center}
+\begin{tabular}{c|ccc}
+- & True 0 & True 1 & True 2 \\ 
+\hline 
+Pred 0 & 4 & 19 & 2 \\ 
+Pred 1 & 46 & 346 & 61 \\ 
+Pred 2 & 2 & 4 & 3 \\ 
+\end{tabular}
+\end{center} 
+\ \\
+\begin{center}
+\begin{tabular}{ccc}
+\hline 
+Precision0 & Precision1 & Precision2 \\ 
+\hline 
+0.160 &  0.764 & 0.333 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\ \\
+
+We need to take more care when we look at the precision numbers. Because of the imbalance of the numbers of data points in each bin, if we have a purely chance predictor, the precision will be the ratio of the number of data point in that bin to the number of data point in total. Thus a pure chance model will have a precision:\\
+\begin{center}
+\begin{tabular}{ccc}
+\hline 
+Precision0 & Precision1 & Precision2 \\ 
+\hline 
+0.070 &  0.758 & 0.136 \\ 
+\hline 
+\end{tabular}
+\end{center}
+Thus even thought the precision number looks bad by their face value, all of them in fact is bigger than the change model. Therefore our model is performing better than chance at predicting change in homeless population. 
+
+We change the cutoff point so that the three bins to have roughly equal amount. The table below shows the best result of the ternary classification for bucket division: [-400,-3), [-3,6), [6,600).\\
+
+\begin{tabular}{c||ccccccc}
+\hline 
+Model & Preprocessing & Accuracy & Training Cost & Testing Cost & Hidden & Output \\ 
+\hline 
+B & Normalization & 0.389 & 0.397 & 0.914 & relu & Sigmoid \\ 
+\hline 
+\end{tabular} \\\\
+With a confusion matrix and precision:\\
+\begin{center}
+\begin{tabular}{c|ccc}
+- & True 0 & True 1 & True 2 \\ 
+\hline 
+Pred 0 & 60 & 49 & 60 \\ 
+Pred 1 & 58 & 79 & 48 \\ 
+Pred 2 & 48 & 35 & 51 \\ 
+\end{tabular}
+\end{center} 
+\ \\
+\begin{center}
+\begin{tabular}{ccc}
+\hline 
+Precision0 & Precision1 & Training Precision2 \\ 
+\hline 
+0.355 & 0.427 &  0.380 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\ \\
+
+A pure chance model for this one would result in a precision of:\\
+\begin{center}
+\begin{tabular}{ccc}
+\hline 
+Precision0 & Precision1 & Training Precision2 \\ 
+\hline 
+0.333 & 0.333 &  0.333 \\ 
+\hline 
+\end{tabular}
+\end{center}
+\ \\
+The precision of our model is higher than each of it's corresponding entry in the chance model. Therefore our model performs better than chance.
+
+\section{Summary and Future Work}
+
+Future research should explore more method of prepossessing the data. Considering the error in public database, we could put the feature data into bins as well (e.g.: income can be slit into 5 bins according to it's standard deviation). Convolutional neural network is also promising in the context of analyzing the change in homeless population because homeless population move around frequently. Change in one area will change the number of homeless population in other areas. 
+
+\section{Acknowledgments}
+
+We thank our adviser and mentor, Professor Michael Lindstrom, for all of his advice and help on this project.
+
+
+\end{document}
