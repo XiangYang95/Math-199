@@ -18,13 +18,10 @@ origMat = cell2mat(table2cell(data(1:818,[2:11, 43:50, 60:65, 69:98])));
 
 % typeNorm = 1;
 %Select numTopics, where numTopics is the number of topics
-% numTopics = 4; 
+numTopics = 4; 
 
-%conduct PCA
-coeff = pca(origMat);
-%%
-% %NNMF algorithm in Matlab
-% [w,h] = nnmf(origMat,numTopics);
+%NNMF algorithm in Matlab
+[w,h] = nnmf(origMat,numTopics);
 
 %     %W matrix will be weight matrix
 %     %Pair tract number with topic
@@ -92,7 +89,7 @@ end
 
 %%
 %number of cluster
-numClus =4;
+numClus =3;
 
 %Forming the eigenpair matrix
 eigenpairMat = horzcat(E,normV');
@@ -101,6 +98,21 @@ eigenpairMatChosen = eigenpairMat(1:numClus,:);
 
 %obtain only the eigenvector matrix
 eigenvecMat = eigenpairMatChosen(:,2:end)';
+
+%use the Gaussian Mix distribution to cluster
+GMModel = fitgmdist(eigenvecMat,numClus);
+idx = cluster(GMModel, eigenvecMat);
+
+%     figure
+%     hold on
+%     plot(w(idx==1,1),'xr')
+%     plot(w(idx==2,1), 'xb')
+%     plot(w(idx==3,1), '+g')
+%     plot(w(idx==4,1), '+c')
+%     hold off
+
+display('Cluster size for each clusters');
+
 idx = kmeans(eigenvecMat, numClus);
 
 for n = 1:numClus
