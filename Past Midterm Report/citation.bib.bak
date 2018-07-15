@@ -1,7 +1,0 @@
-@book{dirac,
-    title = {Neural Networks and Deep Learning},
-    author = {Michael A. Nielsen},
-    year = {2015},
-    publisher = {Determination Press},
-    keywords = {physics}
-}

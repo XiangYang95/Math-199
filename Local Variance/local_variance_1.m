@@ -1,4 +1,4 @@
-function [ct, local_var, sub_origTab] = local_variance_1(ct, long_lat_mat, normMat, type)
+function [ct, local_var, sub_orig] = local_variance_1(ct, long_lat_mat, normMat)
     %first find the 5 closest census tracts around our original census
     %track
     [n,~] = find(long_lat_mat == ct);
@@ -30,26 +30,6 @@ function [ct, local_var, sub_origTab] = local_variance_1(ct, long_lat_mat, normM
     %subset of the normalized matrix
     [log, ~] = ismember(normMat(:,1), cts);
     sub_orig = normMat(log,:);
-    
-    switch type
-        case 1
-            sub_origTab = array2table(sub_orig,'VariableNames',{'Track','CoffeeDensity', 'RestaurantDensity',...
-                'ShelterDensity','CrimeDensity','HousingDensity', 'BusStopDensity',...
-                'GenPop2015Density','ZRI','ZHVI','MedHouseholdIncome'});
-        
-        case 2
-           sub_origTab = array2table(sub_orig,'VariableNames',{'Track','CoffeeDensity', 'RestaurantDensity',...
-                'ShelterDensity','CrimeDensity','HousingDensity', 'BusStopDensity',...
-                'GenPop2015Density','ZRI','ZHVI','MedHouseholdIncome', 'CVC'}); 
-        case 3
-           sub_origTab = array2table(sub_orig,'VariableNames',{'Track','CoffeeDensity', 'RestaurantDensity',...
-                'ShelterDensity','CrimeDensity','HousingDensity', 'BusStopDensity',...
-                'GenPop2015Density','ZRI','ZHVI','MedHouseholdIncome', 'TE'}); 
-        case 4
-           sub_origTab = array2table(sub_orig,'VariableNames',{'Track','CoffeeDensity', 'RestaurantDensity',...
-                'ShelterDensity','CrimeDensity','HousingDensity', 'BusStopDensity',...
-                'GenPop2015Density','ZRI','ZHVI','MedHouseholdIncome', 'Shelter'}); 
-    end
     
     %Get the local variance
     local_var = norm(sub_orig(:,2:end), 'fro');

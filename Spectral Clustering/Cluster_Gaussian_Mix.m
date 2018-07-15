@@ -17,14 +17,16 @@ for jk = 1:5
     %we want to see 4 clusters
     GMModel = fitgmdist(w,k);
     idx = cluster(GMModel, w);
-
-%     figure
-%     hold on
-%     plot(w(idx==1,1),'xr')
-%     plot(w(idx==2,1), 'xb')
-%     plot(w(idx==3,1), '+g')
-%     plot(w(idx==4,1), '+c')
-%     hold off
+    
+    w = horzcat(origMat(:,1),w);
+    
+    figure
+    hold on
+    plot(w(idx==1,1),'xr')
+    plot(w(idx==2,1), 'xb')
+    plot(w(idx==3,1), '+g')
+    plot(w(idx==4,1), '+c')
+    hold off
     
     display('Cluster size for each clusters');
     for clus = 1:k
