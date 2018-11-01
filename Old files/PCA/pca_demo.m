@@ -1,5 +1,6 @@
 close all;
 clear;
+
 % This loads data from a class, with about 10-30% of data points
 % randomnly removed to prevent any possible identification
 % with a specific course. There are 4 columns: the final exam grade,
@@ -91,8 +92,6 @@ hold on;
 
 % now we add the component axes
 
-pause;
-
 parameterization = linspace(-3,3)';
 pca1 = [parameterization*V(1,1), parameterization*V(2,1), ...
     parameterization*V(3,1), parameterization*V(4,1)];
@@ -107,11 +106,10 @@ legend('P');
 
 title('With PC1');
 
-pause;
-
+pause(3)
 pca2 = [parameterization*V(1,2), parameterization*V(2,2), ...
     parameterization*V(3,2), parameterization*V(4,2)];
-colours2 = 0.25 + 0.25*(1+pca2(:,4));
+colours2 = 0.25 + 0.25*(j1+pca2(:,4));
 scatter3(pca2(:,1), pca2(:,2), pca2(:,3), sizes, colours2);
 
 xlabel('FE');
@@ -119,9 +117,10 @@ ylabel('MT');
 zlabel('HW');
 legend('P');
 
+
 title('With PC1, PC2');
 
-pause;
+pause(3);
 
 pca3 = [parameterization*V(1,3), parameterization*V(2,3), ...
     parameterization*V(3,3), parameterization*V(4,3)];

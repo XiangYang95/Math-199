@@ -1,6 +1,6 @@
 clear
 
-cd 'C:\Users\Xiang\OneDrive\Desktop\Math 199\Graphing'
+cd 'C:\Users\Xiang\OneDrive\Desktop\Math 199\Old files\Graphing'
 %Read data in to a table to make it easy to sort rows
 data = readtable('DataByCensusMaster_withPUMA_2yrRatio_succint.xlsx');
 %just to get the trackSqMile
@@ -24,7 +24,7 @@ homelesspop = homelesspop./cell2mat(table2cell(dataSqMile(1:818,10)));
 homelesspop = (tiedrank(homelesspop)-1)/(n-1);
     
 % Varying k
-for k = 3:5
+for k = 3:3
     disp(strcat('No of Topics: ', num2str(k)));
     %NNMF algorithm in Matlab
     [w,h] = nnmf(normMat1,k,'options', statset('display','final'));

@@ -1,0 +1,29 @@
+First meeting
+homelessmath2018@gmail.com
+8 correlations
+
+second meeting:
+Static:
+coffee, shelters, bus stops, 2015 gen pop, library count, ralphs, trader joes and whole foods counts, restaurant count,
+affordable housing units
+
+Homeless Population:
+vehicle, street, shelter and grand total 2015, 2016, 2017
+
+Dynamics:
+AM-AT, BK-CQ, CR-CT, CU-CX, DC-DE, DF-EI
+
+mixture of gaussians:
+for pre and post VIF
+
+Correlation analysis:
+1. Dynamic features and how it changes and also how homeless pop in general how it relates to features.
+2. Static analysis, each 4 homeless pop for each year with static features with dynamic features at that year
+   For each of the dynamic features that have all 3 years do as the same
+   If not, for the dynamic feature we use the data for the previous year
+   for e.g, 2017 street pop, use all the static features and use all ZRI,ZHVI for 2017 and all the dynamic features 
+   from 2016
+3. Dynamic analysis, look at the change in homeless population from 2015-2017 and how that correlates with all
+   the statics and the largest change we can observe from 2015 on. Can safely take the difference.
+4. print all the correlation coefficients
+

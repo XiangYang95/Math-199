@@ -1,10 +1,10 @@
 clear 
 
-cd 'C:\Users\Xiang\OneDrive\Desktop\Math 199\Gaussian Mixture'
+
 
 clear 
 
-cd 'C:\Users\Xiang\OneDrive\Desktop\Math 199\Gaussian Mixture'
+
 %Read data in to a table to make it easy to sort rows
 data = readtable('DataByCensusMaster_withPUMA_modified.xlsx');
 
